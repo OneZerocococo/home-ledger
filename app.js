@@ -82,11 +82,24 @@
 
   function isEditor() { return state.user && state.user.role === 'editor'; }
 
+  // 登入 token 被後端拒絕時只重試一次,避免無限循環
+  function relogin() {
+    let tried = false;
+    try { tried = sessionStorage.getItem('ledger_relogin') === '1'; } catch (e) { /* ignore */ }
+    if (tried) {
+      showError('LINE 登入憑證被後端拒絕。請檢查 Apps Script 指令碼屬性 LOGIN_CHANNEL_ID 是否為 LINE Login channel 的 Channel ID(即 LIFF ID 橫線前的數字)。');
+      try { sessionStorage.removeItem('ledger_relogin'); } catch (e) { /* ignore */ }
+      return;
+    }
+    try { sessionStorage.setItem('ledger_relogin', '1'); } catch (e) { /* ignore */ }
+    liff.logout();
+    setTimeout(() => liff.login(), 300);
+  }
+
   function handleApiError(err) {
     if (err && err.code === 'BAD_TOKEN') {
       toast('登入已過期,重新登入中…', true);
-      liff.logout();
-      setTimeout(() => liff.login(), 600);
+      relogin();
       return;
     }
     toast((err && err.message) || '發生錯誤', true);
@@ -408,14 +421,14 @@
         $('#blocked-userid').textContent = err.userId || '';
         showScreen('screen-blocked');
       } else if (err.code === 'BAD_TOKEN') {
-        liff.logout();
-        liff.login();
+        relogin();
       } else {
         showError(err.message || '載入失敗');
       }
       return;
     }
 
+    try { sessionStorage.removeItem('ledger_relogin'); } catch (e) { /* ignore */ }
     state.user = me.user;
     state.users = me.users;
     state.categories = me.categories;
