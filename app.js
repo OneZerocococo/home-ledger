@@ -246,20 +246,24 @@
     box.innerHTML = '<p class="empty">載入中…</p>';
     try {
       const res = await api('list', { month });
-      state.listCache[month] = res.records;
-      if (state.month === month) renderList(res.records);
+      state.listCache[month] = res;
+      if (state.month === month) renderList(res);
     } catch (err) {
       handleApiError(err);
       box.innerHTML = '<p class="empty">載入失敗</p>';
     }
   }
 
-  function renderList(records) {
+  function renderList(res) {
+    const records = res.records;
     let income = 0, expense = 0;
     records.forEach((r) => { if (r.type === '收入') income += r.amount; else expense += r.amount; });
     $('#t-income').textContent = money(income);
     $('#t-expense').textContent = money(expense);
     $('#t-balance').textContent = money(income - expense);
+    const cum = Number(res.balanceToMonth || 0);
+    $('#t-cum').textContent = money(cum);
+    $('#t-cum').classList.toggle('neg', cum < 0);
 
     const box = $('#list');
     if (!records.length) { box.innerHTML = '<p class="empty">這個月還沒有記錄</p>'; return; }
