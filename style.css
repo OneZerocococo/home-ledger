@@ -95,6 +95,14 @@ button.icon {
 #t-income { color: var(--income); }
 #t-expense { color: var(--expense); }
 
+.cum {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 10px 14px; margin: -6px 0 14px; font-size: 14px; color: var(--muted);
+}
+.cum b { font-size: 18px; color: var(--text); }
+.cum b.neg { color: var(--expense); }
+
 .day { font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
 .item {
   display: flex; align-items: center; gap: 10px;
