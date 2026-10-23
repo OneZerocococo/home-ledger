@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>家用帳本</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">📒 家用帳本</div>
+  <div id="who" class="who"></div>
+</header>
+
+<main id="app" hidden>
+
+  <!-- 記一筆 / 編輯 -->
+  <section id="tab-add" class="tab" hidden>
+    <h2 id="form-title">記一筆</h2>
+    <form id="form" autocomplete="off">
+      <input type="hidden" id="f-id">
+
+      <div class="seg" id="f-type">
+        <button type="button" data-type="支出" class="on">支出</button>
+        <button type="button" data-type="收入">收入</button>
+      </div>
+
+      <label>金額
+        <input id="f-amount" type="number" inputmode="decimal" min="1" step="any" placeholder="0" required>
+      </label>
+
+      <label>類別
+        <select id="f-category"></select>
+      </label>
+
+      <label>說明
+        <input id="f-note" type="text" maxlength="200" placeholder="例如:午餐、10月電費">
+      </label>
+
+      <label>日期
+        <input id="f-date" type="date" required>
+      </label>
+
+      <div id="f-reimburse-box" class="check-row">
+        <label class="check">
+          <input id="f-reimburse" type="checkbox">
+          <span>需請款(先墊付,之後撥款)</span>
+        </label>
+        <label id="f-payer-row" hidden>墊付人
+          <select id="f-payer"></select>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="f-submit">送出</button>
+        <button type="button" class="ghost" id="f-cancel" hidden>取消編輯</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 清單 -->
+  <section id="tab-list" class="tab" hidden>
+    <div class="month-row">
+      <button type="button" class="icon" id="m-prev">‹</button>
+      <input type="month" id="m-month">
+      <button type="button" class="icon" id="m-next">›</button>
+    </div>
+    <div class="totals">
+      <div><span>收入</span><b id="t-income">0</b></div>
+      <div><span>支出</span><b id="t-expense">0</b></div>
+      <div><span>結餘</span><b id="t-balance">0</b></div>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <!-- 請款核銷 -->
+  <section id="tab-pending" class="tab" hidden>
+    <h2>待撥款</h2>
+    <p class="muted" id="p-summary"></p>
+    <div id="pending"></div>
+  </section>
+
+</main>
+
+<nav id="tabs" class="tabs" hidden>
+  <button type="button" data-tab="add">➕<span>記一筆</span></button>
+  <button type="button" data-tab="list">📋<span>清單</span></button>
+  <button type="button" data-tab="pending">💸<span>請款</span></button>
+</nav>
+
+<div id="screen-loading" class="screen">載入中…</div>
+
+<div id="screen-blocked" class="screen" hidden>
+  <h2>尚未開通</h2>
+  <p>你還不在使用者名單中。請把下面這串 userId 傳給帳本管理者:</p>
+  <code id="blocked-userid"></code>
+  <p class="muted">管理者將它貼進試算表「設定」工作表並設定角色後,重新開啟此頁即可。</p>
+</div>
+
+<div id="screen-error" class="screen" hidden>
+  <h2>出了點問題</h2>
+  <p id="error-text"></p>
+  <button type="button" class="primary" onclick="location.reload()">重新載入</button>
+</div>
+
+<div id="confirm" class="modal" hidden>
+  <div class="modal-box">
+    <p id="confirm-text"></p>
+    <div class="actions">
+      <button type="button" class="ghost" id="confirm-no">取消</button>
+      <button type="button" class="danger" id="confirm-yes">確定</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
